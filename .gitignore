@@ -1,0 +1,10 @@
+# Dependencies & Temporary Files
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# IDE / Editor Files
+.vscode/
+.idea/
+*.swp
