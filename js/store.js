@@ -16,7 +16,10 @@ const initialCourses = [
         room: 'Lab 302',
         prereq: 'None',
         capacity: 30,
-        enrolledCount: 18
+        enrolledCount: 18,
+        description: 'Fundamentals of structured C programming, control flow structures, functions, pointers, array manipulation, memory allocation, and file I/O operations.',
+        syllabus: ['C Fundamentals & Variables', 'Control Structures & Loops', 'Functions & Recursion', 'Pointers & Dynamic Memory', 'File Handling & Structs'],
+        assessment: 'Midterm: 30%, Final Exam: 40%, Lab Work: 20%, Quizzes: 10%'
     },
     {
         id: 'c2',
@@ -32,7 +35,10 @@ const initialCourses = [
         room: 'Auditorium A',
         prereq: 'CSE101',
         capacity: 25,
-        enrolledCount: 12
+        enrolledCount: 12,
+        description: 'Comprehensive analysis of linear and non-linear data structures including stacks, queues, linked lists, binary trees, heaps, graph algorithms, and time complexity estimation.',
+        syllabus: ['Asymptotic Notation (Big O)', 'Linked Lists & Stacks/Queues', 'Trees & BST Traversal', 'Graph Traversal (DFS/BFS)', 'Sorting & Searching Algorithms'],
+        assessment: 'Assignments: 20%, Midterm: 30%, Final Exam: 40%, Lab: 10%'
     },
     {
         id: 'c3',
@@ -48,7 +54,10 @@ const initialCourses = [
         room: 'Room 405',
         prereq: 'CSE210',
         capacity: 35,
-        enrolledCount: 22
+        enrolledCount: 22,
+        description: 'Software development lifecycle, Agile methodologies, requirement engineering (SRS), UML system modeling, architectural design patterns, software testing, and Git version control.',
+        syllabus: ['Agile & Scrum Framework', 'Requirement Analysis (SRS)', 'UML Class & Sequence Diagrams', 'Design Patterns (MVC/Singleton)', 'Git Workflow & Unit Testing'],
+        assessment: 'Project Presentation: 30%, Midterm: 20%, Final: 30%, Lab Tasks: 20%'
     },
     {
         id: 'c4',
@@ -64,7 +73,10 @@ const initialCourses = [
         room: 'Lab E1',
         prereq: 'None',
         capacity: 40,
-        enrolledCount: 30
+        enrolledCount: 30,
+        description: 'Basic circuit concepts, Ohm’s Law, Kirchhoff’s laws, mesh and nodal analysis, Thevenin/Norton equivalents, RLC circuits, and AC power analysis.',
+        syllabus: ['DC Circuit Laws & Mesh Analysis', 'Network Theorems (Thevenin/Norton)', 'Capacitors & Inductors', 'Sinusoidal Steady State', 'AC Power & Resonance'],
+        assessment: 'Lab Experiments: 25%, Quizzes: 15%, Midterm: 25%, Final Exam: 35%'
     },
     {
         id: 'c5',
@@ -80,7 +92,10 @@ const initialCourses = [
         room: 'Hall 101',
         prereq: 'None',
         capacity: 50,
-        enrolledCount: 41
+        enrolledCount: 41,
+        description: 'Functions, limits, continuity, derivatives, optimization problems, definite/indefinite integrals, techniques of integration, and applications in computer science.',
+        syllabus: ['Limits & Continuity', 'Rules of Differentiation', 'Applications of Derivatives', 'Definite & Indefinite Integrals', 'Series & Sequences'],
+        assessment: 'Midterm 1: 25%, Midterm 2: 25%, Final Exam: 40%, Homework: 10%'
     },
     {
         id: 'c6',
@@ -96,7 +111,10 @@ const initialCourses = [
         room: 'Room 201',
         prereq: 'None',
         capacity: 30,
-        enrolledCount: 15
+        enrolledCount: 15,
+        description: 'Introduction to financial reporting, accounting cycle, journal entries, ledger accounts, balance sheets, income statements, and cash flow analysis.',
+        syllabus: ['Accounting Equation & Double Entry', 'Journalizing & Ledger Posting', 'Trial Balance & Adjusting Entries', 'Financial Statements Analysis', 'Internal Controls & Inventory'],
+        assessment: 'Quizzes & Cases: 20%, Midterm: 30%, Final Project: 15%, Final Exam: 35%'
     }
 ];
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <!-- Custom CSS Design System -->
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
     <!-- Header Navigation -->
@@ -45,7 +47,7 @@
 
     <!-- Main Application Container -->
     <div class="app-layout">
-        
+
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <!-- Student Navigation Links -->
@@ -92,6 +94,40 @@
                     </div>
                 </div>
 
+                <!-- Dashboard Stats Banner -->
+                <div class="stats-banner">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="stat-details">
+                            <h4>Active Semester</h4>
+                            <div class="stat-number" style="font-size: 1.1rem; color: var(--c-soft-sage);">Fall 2026
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+                        <div class="stat-details">
+                            <h4>Offered Courses</h4>
+                            <div class="stat-number" id="statTotalOffered">6</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+                        <div class="stat-details">
+                            <h4>My Enrolled</h4>
+                            <div class="stat-number" id="statMyEnrolledCount">1</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-details">
+                            <h4>Reg. Deadline</h4>
+                            <div class="stat-number" style="font-size: 1.1rem; color: var(--status-warning);">5 Days
+                                Left</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Credit Tracker Card Widget -->
                 <div class="credit-tracker-card">
                     <div class="credit-info">
@@ -113,7 +149,8 @@
                 <div class="filter-bar">
                     <div class="search-input-box">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="courseSearchInput" placeholder="Search by course code, title, or instructor...">
+                        <input type="text" id="courseSearchInput"
+                            placeholder="Search by course code, title, or instructor...">
                     </div>
 
                     <select id="deptFilterSelect" class="filter-select">
@@ -138,6 +175,10 @@
                         <h1>My Enrolled Timetable</h1>
                         <p>Review your registered course schedule and drop courses if necessary.</p>
                     </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print
+                            Advising Slip</button>
+                    </div>
                 </div>
 
                 <div class="table-container">
@@ -157,6 +198,15 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Visual Timetable Matrix Grid -->
+                <div class="timetable-grid-card">
+                    <h3 style="color: var(--c-light-mint); margin-bottom: 1rem;"><i class="fas fa-calendar-week"
+                            style="color: var(--c-soft-sage);"></i> Weekly Schedule Matrix</h3>
+                    <div class="timetable-matrix" id="visualTimetableMatrix">
+                        <!-- Dynamic matrix rendering by app.js -->
+                    </div>
+                </div>
             </section>
 
             <!-- VIEW 3: Instructor Portal -->
@@ -169,12 +219,16 @@
                 </div>
 
                 <div class="admin-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
                         <div>
-                            <h3 style="color: var(--c-light-mint);">Assigned Course: CSE101 - Structured Programming</h3>
-                            <p style="color: var(--text-secondary); font-size: 0.85rem;">Mon/Wed 09:00 AM - 10:30 AM | Lab 302</p>
+                            <h3 style="color: var(--c-light-mint);">Assigned Course: CSE101 - Structured Programming
+                            </h3>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem;">Mon/Wed 09:00 AM - 10:30 AM |
+                                Lab 302</p>
                         </div>
-                        <button class="btn btn-outline btn-sm"><i class="fas fa-file-export"></i> Export Roster CSV</button>
+                        <button class="btn btn-outline btn-sm"><i class="fas fa-file-export"></i> Export Roster
+                            CSV</button>
                     </div>
 
                     <div class="table-container">
@@ -207,16 +261,19 @@
 
                 <!-- Add Course Form Card -->
                 <div class="admin-card">
-                    <h3 style="color: var(--c-light-mint); margin-bottom: 1.25rem;"><i class="fas fa-plus-circle" style="color: var(--c-soft-sage);"></i> Offer New Course</h3>
+                    <h3 style="color: var(--c-light-mint); margin-bottom: 1.25rem;"><i class="fas fa-plus-circle"
+                            style="color: var(--c-soft-sage);"></i> Offer New Course</h3>
                     <form id="addCourseForm">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="newCourseCode">Course Code</label>
-                                <input type="text" id="newCourseCode" class="form-control" placeholder="e.g. CSE401" required>
+                                <input type="text" id="newCourseCode" class="form-control" placeholder="e.g. CSE401"
+                                    required>
                             </div>
                             <div class="form-group">
                                 <label for="newCourseTitle">Course Title</label>
-                                <input type="text" id="newCourseTitle" class="form-control" placeholder="e.g. Artificial Intelligence" required>
+                                <input type="text" id="newCourseTitle" class="form-control"
+                                    placeholder="e.g. Artificial Intelligence" required>
                             </div>
                             <div class="form-group">
                                 <label for="newCourseDept">Department</label>
@@ -229,11 +286,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="newCourseCredits">Credit Hours</label>
-                                <input type="number" id="newCourseCredits" class="form-control" value="3" min="1" max="6" required>
+                                <input type="number" id="newCourseCredits" class="form-control" value="3" min="1"
+                                    max="6" required>
                             </div>
                             <div class="form-group">
                                 <label for="newCourseInstructor">Instructor</label>
-                                <input type="text" id="newCourseInstructor" class="form-control" placeholder="Dr. Jane Doe" required>
+                                <input type="text" id="newCourseInstructor" class="form-control"
+                                    placeholder="Dr. Jane Doe" required>
                             </div>
                             <div class="form-group">
                                 <label for="newCourseDays">Days (Comma-separated)</label>
@@ -253,7 +312,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="newCoursePrereq">Prerequisite Code</label>
-                                <input type="text" id="newCoursePrereq" class="form-control" placeholder="e.g. CSE210 or None">
+                                <input type="text" id="newCoursePrereq" class="form-control"
+                                    placeholder="e.g. CSE210 or None">
                             </div>
                             <div class="form-group">
                                 <label for="newCourseCapacity">Seat Capacity</label>
@@ -295,9 +355,23 @@
         </main>
     </div>
 
+    <!-- Course Details Modal -->
+    <div class="modal-backdrop" id="courseDetailModal">
+        <div class="modal-box" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3 id="modalCourseTitle">Course Details</h3>
+                <button class="close-btn" onclick="closeCourseModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="modalCourseBody">
+                <!-- Dynamic content populated by app.js -->
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/store.js"></script>
     <script src="js/validator.js"></script>
     <script src="js/app.js"></script>
 </body>
+
 </html>

@@ -132,6 +132,7 @@ function renderStudentCreditTracker() {
 
 /* Student: Render Course Catalog Cards */
 function renderStudentCatalog() {
+    renderDashboardStats();
     const container = document.getElementById('courseCatalogGrid');
     if (!container) return;
 
@@ -187,14 +188,17 @@ function renderStudentCatalog() {
                     </div>
                 </div>
 
-                <div style="margin-top: 1rem;">
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="openCourseModal('${c.id}')">
+                        <i class="fas fa-info-circle"></i> Details
+                    </button>
                     ${isEnrolled ? `
-                        <button class="btn btn-danger btn-sm" style="width: 100%;" onclick="handleDropCourse('${c.id}')">
-                            <i class="fas fa-minus-circle"></i> Drop Course
+                        <button class="btn btn-danger btn-sm" style="flex: 1;" onclick="handleDropCourse('${c.id}')">
+                            <i class="fas fa-minus-circle"></i> Drop
                         </button>
                     ` : `
-                        <button class="btn btn-primary" style="width: 100%;" ${isFull ? 'disabled' : ''} onclick="handleRegisterCourse('${c.id}')">
-                            <i class="fas fa-plus-circle"></i> ${isFull ? 'Course Full' : 'Register Now'}
+                        <button class="btn btn-primary btn-sm" style="flex: 1;" ${isFull ? 'disabled' : ''} onclick="handleRegisterCourse('${c.id}')">
+                            <i class="fas fa-plus-circle"></i> ${isFull ? 'Full' : 'Register'}
                         </button>
                     `}
                 </div>
@@ -203,33 +207,136 @@ function renderStudentCatalog() {
     }).join('');
 }
 
-/* Student: Enrolled Schedule Timetable View */
+/* Render Dashboard Banner Stats */
+function renderDashboardStats() {
+    const courses = window.courseStore.getCourses();
+    const enrolled = window.courseStore.getStudentEnrolledCourses();
+
+    const statOffered = document.getElementById('statTotalOffered');
+    const statEnrolled = document.getElementById('statMyEnrolledCount');
+
+    if (statOffered) statOffered.textContent = courses.length;
+    if (statEnrolled) statEnrolled.textContent = enrolled.length;
+}
+
+/* Student: Enrolled Schedule Timetable & Visual Matrix View */
 function renderEnrolledSchedule() {
     const tbody = document.getElementById('enrolledScheduleTableBody');
-    if (!tbody) return;
-
     const enrolledCourses = window.courseStore.getStudentEnrolledCourses();
 
-    if (enrolledCourses.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-secondary); padding: 2rem;">No courses registered yet. Browse the catalog to enroll!</td></tr>`;
-        return;
+    if (tbody) {
+        if (enrolledCourses.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-secondary); padding: 2rem;">No courses registered yet. Browse the catalog to enroll!</td></tr>`;
+        } else {
+            tbody.innerHTML = enrolledCourses.map(c => `
+                <tr>
+                    <td><strong style="color: var(--c-soft-sage);">${c.code}</strong></td>
+                    <td>${c.title}</td>
+                    <td><span class="credits-badge">${c.credits} Credits</span></td>
+                    <td>${c.schedule}</td>
+                    <td>${c.room}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="handleDropCourse('${c.id}')">
+                            <i class="fas fa-trash-alt"></i> Drop
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
     }
 
-    tbody.innerHTML = enrolledCourses.map(c => `
-        <tr>
-            <td><strong style="color: var(--c-soft-sage);">${c.code}</strong></td>
-            <td>${c.title}</td>
-            <td><span class="credits-badge">${c.credits} Credits</span></td>
-            <td>${c.schedule}</td>
-            <td>${c.room}</td>
-            <td>
-                <button class="btn btn-danger btn-sm" onclick="handleDropCourse('${c.id}')">
-                    <i class="fas fa-trash-alt"></i> Drop
-                </button>
-            </td>
-        </tr>
-    `).join('');
+    renderVisualTimetableMatrix(enrolledCourses);
 }
+
+/* Render Visual Timetable Matrix (Sun - Thu) */
+function renderVisualTimetableMatrix(enrolledCourses) {
+    const matrixContainer = document.getElementById('visualTimetableMatrix');
+    if (!matrixContainer) return;
+
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+    const timeSlots = [
+        { label: '08:30 - 10:00', start: '08:30', end: '10:00' },
+        { label: '10:00 - 11:30', start: '10:00', end: '11:30' },
+        { label: '11:30 - 01:00', start: '11:30', end: '13:00' },
+        { label: '02:00 - 03:30', start: '14:00', end: '15:30' }
+    ];
+
+    let html = `<div></div>` + days.map(d => `<div class="matrix-header">${d}</div>`).join('');
+
+    timeSlots.forEach(slot => {
+        html += `<div class="matrix-time-col">${slot.label}</div>`;
+        days.forEach(day => {
+            const match = enrolledCourses.find(c => {
+                const hasDay = c.days.includes(day);
+                const hasTime = (c.startTime >= slot.start && c.startTime < slot.end) || (c.endTime > slot.start && c.endTime <= slot.end);
+                return hasDay && hasTime;
+            });
+
+            if (match) {
+                html += `
+                    <div class="matrix-cell has-class">
+                        <div class="class-pill-title">${match.code}</div>
+                        <div class="class-pill-meta">${match.room}</div>
+                    </div>
+                `;
+            } else {
+                html += `<div class="matrix-cell"></div>`;
+            }
+        });
+    });
+
+    matrixContainer.innerHTML = html;
+}
+
+/* Course Details Modal Controls */
+window.openCourseModal = function (courseId) {
+    const courses = window.courseStore.getCourses();
+    const course = courses.find(c => c.id === courseId);
+    if (!course) return;
+
+    const modal = document.getElementById('courseDetailModal');
+    const title = document.getElementById('modalCourseTitle');
+    const body = document.getElementById('modalCourseBody');
+
+    if (title) title.textContent = `${course.code}: ${course.title}`;
+
+    if (body) {
+        body.innerHTML = `
+            <div class="course-detail-header">
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0.75rem;">${course.description || 'Comprehensive university degree course.'}</p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem;">
+                    <span><i class="fas fa-building" style="color: var(--c-soft-sage);"></i> Dept: <strong>${course.dept}</strong></span>
+                    <span><i class="fas fa-graduation-cap" style="color: var(--c-soft-sage);"></i> Credits: <strong>${course.credits}</strong></span>
+                    <span><i class="fas fa-user-tie" style="color: var(--c-soft-sage);"></i> Faculty: <strong>${course.instructor}</strong></span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+                <h4 style="color: var(--c-soft-sage); font-size: 0.88rem; text-transform: uppercase; margin-bottom: 0.5rem;">Syllabus Topics Covered</h4>
+                <ul class="syllabus-list">
+                    ${(course.syllabus || ['Core Theoretical Principles', 'Practical Lab Implementations']).map(item => `<li><i class="fas fa-chevron-right"></i> ${item}</li>`).join('')}
+                </ul>
+            </div>
+
+            <div style="margin-bottom: 1.5rem; background: var(--c-forest-accent); padding: 0.85rem 1rem; border-radius: var(--radius-md); font-size: 0.85rem;">
+                <span style="color: var(--c-soft-sage); font-weight: 700;">Assessment Weightage:</span>
+                <p style="color: var(--c-light-mint); margin-top: 0.25rem;">${course.assessment || 'Midterm: 30%, Final: 50%, Continuous: 20%'}</p>
+            </div>
+
+            <div style="text-align: right;">
+                <button class="btn btn-outline" onclick="closeCourseModal()">Close</button>
+            </div>
+        `;
+    }
+
+    if (modal) modal.classList.add('active');
+};
+
+window.closeCourseModal = function () {
+    const modal = document.getElementById('courseDetailModal');
+    if (modal) modal.classList.remove('active');
+};
+
 
 /* Enrollment Event Handler */
 window.handleRegisterCourse = function (courseId) {
