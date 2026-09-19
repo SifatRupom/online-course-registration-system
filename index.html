@@ -252,103 +252,184 @@
 
             <!-- VIEW 4: Admin Portal -->
             <section id="viewAdminPortal" class="view-section">
-                <div class="page-header">
-                    <div class="page-title-group">
-                        <h1>Course Catalog Management</h1>
-                        <p>Add new course offerings, manage schedules, prerequisites, and credit limits.</p>
+
+                <!-- Admin Auth Gate (Shown when not authenticated) -->
+                <div id="adminAuthContainer">
+                    <div class="admin-card" style="max-width: 500px; margin: 3rem auto; text-align: center;">
+                        <div
+                            style="width: 60px; height: 60px; background: rgba(142, 182, 155, 0.15); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; color: var(--c-soft-sage); font-size: 1.8rem;">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h2 style="color: var(--c-light-mint); font-size: 1.5rem; margin-bottom: 0.5rem;">System Admin
+                            Access</h2>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.5rem;">Please log
+                            in with administrator credentials or register a new admin account.</p>
+
+                        <!-- Auth Tabs -->
+                        <div
+                            style="display: flex; gap: 0.5rem; background: var(--c-dark-forest); padding: 0.35rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                            <button id="tabAdminLogin" class="btn btn-primary btn-sm" style="flex: 1;"
+                                onclick="switchAdminAuthTab('login')">Admin Login</button>
+                            <button id="tabAdminRegister" class="btn btn-outline btn-sm" style="flex: 1;"
+                                onclick="switchAdminAuthTab('register')">Register New Admin</button>
+                        </div>
+
+                        <!-- Admin Login Form -->
+                        <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                            <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                                <label for="adminEmail">Admin Email / Username</label>
+                                <input type="email" id="adminEmail" class="form-control" value="admin@univ.edu" required
+                                    placeholder="admin@univ.edu">
+                            </div>
+                            <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                                <label for="adminPass">Secret Admin Password</label>
+                                <input type="password" id="adminPass" class="form-control" value="admin123" required
+                                    placeholder="••••••••">
+                                <span style="font-size: 0.75rem; color: var(--c-soft-sage); margin-top: 0.25rem;">Demo
+                                    password: <code>admin123</code></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-sign-in-alt"></i> Login to System Admin
+                            </button>
+                        </form>
+
+                        <!-- Admin Registration Form (Hidden by default) -->
+                        <form id="adminRegisterForm" onsubmit="handleAdminRegister(event)" style="display: none;">
+                            <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                                <label for="regAdminName">Full Name</label>
+                                <input type="text" id="regAdminName" class="form-control"
+                                    placeholder="e.g. Dr. Arthur Pendelton" required>
+                            </div>
+                            <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                                <label for="regAdminEmail">Official Email</label>
+                                <input type="email" id="regAdminEmail" class="form-control"
+                                    placeholder="a.pendelton@univ.edu" required>
+                            </div>
+                            <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                                <label for="regAdminRole">Admin Designation</label>
+                                <select id="regAdminRole" class="form-control" required>
+                                    <option value="Senior Registrar">Senior Registrar</option>
+                                    <option value="Academic Dean">Academic Dean</option>
+                                    <option value="Department Chair">Department Chair</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                                <label for="regAdminPass">Create Secret Password</label>
+                                <input type="password" id="regAdminPass" class="form-control" placeholder="••••••••"
+                                    required minlength="6">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-user-plus"></i> Create Admin Account
+                            </button>
+                        </form>
                     </div>
                 </div>
 
-                <!-- Add Course Form Card -->
-                <div class="admin-card">
-                    <h3 style="color: var(--c-light-mint); margin-bottom: 1.25rem;"><i class="fas fa-plus-circle"
-                            style="color: var(--c-soft-sage);"></i> Offer New Course</h3>
-                    <form id="addCourseForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="newCourseCode">Course Code</label>
-                                <input type="text" id="newCourseCode" class="form-control" placeholder="e.g. CSE401"
-                                    required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newCourseTitle">Course Title</label>
-                                <input type="text" id="newCourseTitle" class="form-control"
-                                    placeholder="e.g. Artificial Intelligence" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newCourseDept">Department</label>
-                                <select id="newCourseDept" class="form-control" required>
-                                    <option value="CSE">CSE</option>
-                                    <option value="EEE">EEE</option>
-                                    <option value="MATH">MATH</option>
-                                    <option value="BBA">BBA</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="newCourseCredits">Credit Hours</label>
-                                <input type="number" id="newCourseCredits" class="form-control" value="3" min="1"
-                                    max="6" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newCourseInstructor">Instructor</label>
-                                <input type="text" id="newCourseInstructor" class="form-control"
-                                    placeholder="Dr. Jane Doe" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newCourseDays">Days (Comma-separated)</label>
-                                <input type="text" id="newCourseDays" class="form-control" value="Mon,Wed" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newCourseStart">Start Time (24h)</label>
-                                <input type="text" id="newCourseStart" class="form-control" value="14:00" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newCourseEnd">End Time (24h)</label>
-                                <input type="text" id="newCourseEnd" class="form-control" value="15:30" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newCourseRoom">Room No.</label>
-                                <input type="text" id="newCourseRoom" class="form-control" value="Room 304" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newCoursePrereq">Prerequisite Code</label>
-                                <input type="text" id="newCoursePrereq" class="form-control"
-                                    placeholder="e.g. CSE210 or None">
-                            </div>
-                            <div class="form-group">
-                                <label for="newCourseCapacity">Seat Capacity</label>
-                                <input type="number" id="newCourseCapacity" class="form-control" value="35" min="5">
-                            </div>
+                <!-- Admin Main Dashboard (Shown when authenticated) -->
+                <div id="adminDashboardContent" style="display: none;">
+                    <div class="page-header">
+                        <div class="page-title-group">
+                            <h1>Course Catalog Management</h1>
+                            <p id="adminStatusLabel">Authenticated as System Administrator</p>
                         </div>
-
-                        <div style="margin-top: 1.5rem; text-align: right;">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Save & Publish Course
-                            </button>
+                        <div>
+                            <button class="btn btn-danger btn-sm" onclick="handleAdminLogout()"><i
+                                    class="fas fa-sign-out-alt"></i> Logout Admin</button>
                         </div>
-                    </form>
-                </div>
+                    </div>
 
-                <!-- Admin Catalog Table -->
-                <div class="table-container">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Code</th>
-                                <th>Title</th>
-                                <th>Dept</th>
-                                <th>Credits</th>
-                                <th>Instructor</th>
-                                <th>Schedule</th>
-                                <th>Prerequisite</th>
-                                <th>Seats</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminCourseTableBody">
-                            <!-- Dynamic rendering by app.js -->
-                        </tbody>
-                    </table>
+                    <!-- Add Course Form Card -->
+                    <div class="admin-card">
+                        <h3 style="color: var(--c-light-mint); margin-bottom: 1.25rem;"><i class="fas fa-plus-circle"
+                                style="color: var(--c-soft-sage);"></i> Offer New Course</h3>
+                        <form id="addCourseForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="newCourseCode">Course Code</label>
+                                    <input type="text" id="newCourseCode" class="form-control" placeholder="e.g. CSE401"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCourseTitle">Course Title</label>
+                                    <input type="text" id="newCourseTitle" class="form-control"
+                                        placeholder="e.g. Artificial Intelligence" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCourseDept">Department</label>
+                                    <select id="newCourseDept" class="form-control" required>
+                                        <option value="CSE">CSE</option>
+                                        <option value="EEE">EEE</option>
+                                        <option value="MATH">MATH</option>
+                                        <option value="BBA">BBA</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCourseCredits">Credit Hours</label>
+                                    <input type="number" id="newCourseCredits" class="form-control" value="3" min="1"
+                                        max="6" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCourseInstructor">Instructor</label>
+                                    <input type="text" id="newCourseInstructor" class="form-control"
+                                        placeholder="Dr. Jane Doe" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCourseDays">Days (Comma-separated)</label>
+                                    <input type="text" id="newCourseDays" class="form-control" value="Mon,Wed" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCourseStart">Start Time (24h)</label>
+                                    <input type="text" id="newCourseStart" class="form-control" value="14:00" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCourseEnd">End Time (24h)</label>
+                                    <input type="text" id="newCourseEnd" class="form-control" value="15:30" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCourseRoom">Room No.</label>
+                                    <input type="text" id="newCourseRoom" class="form-control" value="Room 304"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCoursePrereq">Prerequisite Code</label>
+                                    <input type="text" id="newCoursePrereq" class="form-control"
+                                        placeholder="e.g. CSE210 or None">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newCourseCapacity">Seat Capacity</label>
+                                    <input type="number" id="newCourseCapacity" class="form-control" value="35" min="5">
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 1.5rem; text-align: right;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save & Publish Course
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Admin Catalog Table -->
+                    <div class="table-container">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Title</th>
+                                    <th>Dept</th>
+                                    <th>Credits</th>
+                                    <th>Instructor</th>
+                                    <th>Schedule</th>
+                                    <th>Prerequisite</th>
+                                    <th>Seats</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminCourseTableBody">
+                                <!-- Dynamic rendering by app.js -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 

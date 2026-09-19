@@ -392,8 +392,93 @@ window.handleDropCourse = function (courseId) {
     }
 };
 
+/* Admin Authentication Tab Switcher */
+window.switchAdminAuthTab = function (tab) {
+    const loginTab = document.getElementById('tabAdminLogin');
+    const regTab = document.getElementById('tabAdminRegister');
+    const loginForm = document.getElementById('adminLoginForm');
+    const regForm = document.getElementById('adminRegisterForm');
+
+    if (tab === 'login') {
+        if (loginTab) loginTab.className = 'btn btn-primary btn-sm';
+        if (regTab) regTab.className = 'btn btn-outline btn-sm';
+        if (loginForm) loginForm.style.display = 'block';
+        if (regForm) regForm.style.display = 'none';
+    } else {
+        if (loginTab) loginTab.className = 'btn btn-outline btn-sm';
+        if (regTab) regTab.className = 'btn btn-primary btn-sm';
+        if (loginForm) loginForm.style.display = 'none';
+        if (regForm) regForm.style.display = 'block';
+    }
+};
+
+/* Handle Admin Login */
+window.handleAdminLogin = function (e) {
+    e.preventDefault();
+    const email = document.getElementById('adminEmail')?.value;
+    const pass = document.getElementById('adminPass')?.value;
+
+    const storedAdmins = JSON.parse(localStorage.getItem('registered_admins') || '[]');
+    const isDefaultAdmin = (email === 'admin@univ.edu' && pass === 'admin123');
+    const foundAdmin = storedAdmins.find(a => a.email === email && a.pass === pass);
+
+    if (isDefaultAdmin || foundAdmin) {
+        const adminData = foundAdmin || { name: 'System Administrator', email: 'admin@univ.edu', role: 'Chief Registrar' };
+        localStorage.setItem('active_admin_session', JSON.stringify(adminData));
+        showToast(`Welcome back, ${adminData.name}! Admin Portal unlocked.`, 'success');
+        renderAdminCourseTable();
+    } else {
+        showToast('Invalid admin credentials! Demo login: admin@univ.edu / admin123', 'error');
+    }
+};
+
+/* Handle Admin Registration */
+window.handleAdminRegister = function (e) {
+    e.preventDefault();
+    const name = document.getElementById('regAdminName')?.value;
+    const email = document.getElementById('regAdminEmail')?.value;
+    const role = document.getElementById('regAdminRole')?.value;
+    const pass = document.getElementById('regAdminPass')?.value;
+
+    const storedAdmins = JSON.parse(localStorage.getItem('registered_admins') || '[]');
+    if (storedAdmins.some(a => a.email === email) || email === 'admin@univ.edu') {
+        showToast('An admin account with this email already exists!', 'error');
+        return;
+    }
+
+    const newAdmin = { name, email, role, pass };
+    storedAdmins.push(newAdmin);
+    localStorage.setItem('registered_admins', JSON.stringify(storedAdmins));
+    localStorage.setItem('active_admin_session', JSON.stringify(newAdmin));
+
+    showToast(`Admin account for ${name} registered successfully!`, 'success');
+    renderAdminCourseTable();
+};
+
+/* Handle Admin Logout */
+window.handleAdminLogout = function () {
+    localStorage.removeItem('active_admin_session');
+    showToast('Logged out of System Admin Portal.', 'info');
+    renderAdminCourseTable();
+};
+
 /* Admin Portal Course List & Form */
 function renderAdminCourseTable() {
+    const authContainer = document.getElementById('adminAuthContainer');
+    const dashboardContent = document.getElementById('adminDashboardContent');
+    const statusLabel = document.getElementById('adminStatusLabel');
+    const activeAdmin = JSON.parse(localStorage.getItem('active_admin_session') || 'null');
+
+    if (activeAdmin) {
+        if (authContainer) authContainer.style.display = 'none';
+        if (dashboardContent) dashboardContent.style.display = 'block';
+        if (statusLabel) statusLabel.textContent = `Authenticated as: ${activeAdmin.name} (${activeAdmin.role || 'System Administrator'})`;
+    } else {
+        if (authContainer) authContainer.style.display = 'block';
+        if (dashboardContent) dashboardContent.style.display = 'none';
+        return;
+    }
+
     const tbody = document.getElementById('adminCourseTableBody');
     if (!tbody) return;
 
