@@ -504,6 +504,16 @@ function renderAdminCourseTable() {
 }
 
 function setupAdminForms() {
+    const loginForm = document.getElementById('adminLoginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', window.handleAdminLogin);
+    }
+
+    const registerForm = document.getElementById('adminRegisterForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', window.handleAdminRegister);
+    }
+
     const form = document.getElementById('addCourseForm');
     if (form) {
         form.addEventListener('submit', (e) => {
