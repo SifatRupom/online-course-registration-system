@@ -211,41 +211,124 @@
 
             <!-- VIEW 3: Instructor Portal -->
             <section id="viewInstructorPortal" class="view-section">
-                <div class="page-header">
-                    <div class="page-title-group">
-                        <h1>Instructor Portal & Class Roster</h1>
-                        <p>View student enrollment rosters and update final grades.</p>
+
+                <!-- Instructor Auth Gate (Shown when not authenticated) -->
+                <div id="instructorAuthContainer">
+                    <div class="admin-card" style="max-width: 500px; margin: 3rem auto; text-align: center;">
+                        <div
+                            style="width: 60px; height: 60px; background: rgba(142, 182, 155, 0.15); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; color: var(--c-soft-sage); font-size: 1.8rem;">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h2 style="color: var(--c-light-mint); font-size: 1.5rem; margin-bottom: 0.5rem;">Faculty &
+                            Instructor Portal</h2>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.5rem;">Please log
+                            in with faculty credentials or register your instructor account.</p>
+
+                        <!-- Auth Tabs -->
+                        <div
+                            style="display: flex; gap: 0.5rem; background: var(--c-dark-forest); padding: 0.35rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                            <button type="button" id="tabInstructorLogin" class="btn btn-primary btn-sm"
+                                style="flex: 1;" onclick="switchInstructorAuthTab('login')">Instructor Sign In</button>
+                            <button type="button" id="tabInstructorRegister" class="btn btn-outline btn-sm"
+                                style="flex: 1;" onclick="switchInstructorAuthTab('register')">Register Faculty</button>
+                        </div>
+
+                        <!-- Instructor Login Form -->
+                        <form id="instructorLoginForm">
+                            <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                                <label for="instructorEmail">Faculty Email</label>
+                                <input type="email" id="instructorEmail" class="form-control"
+                                    value="instructor@univ.edu" required placeholder="instructor@univ.edu">
+                            </div>
+                            <div class="form-group" style="text-align: left; margin-bottom: 1.25rem;">
+                                <label for="instructorPass">Password</label>
+                                <input type="password" id="instructorPass" class="form-control" value="faculty123"
+                                    required placeholder="••••••••">
+                                <span
+                                    style="font-size: 0.78rem; color: var(--c-soft-sage); display: block; margin-top: 0.4rem;">Demo
+                                    Credentials: <code>instructor@univ.edu</code> / <code>faculty123</code></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-sign-in-alt"></i> Login to Faculty Portal
+                            </button>
+                        </form>
+
+                        <!-- Instructor Registration Form (Hidden by default) -->
+                        <form id="instructorRegisterForm" style="display: none;">
+                            <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                                <label for="regInstructorName">Full Name</label>
+                                <input type="text" id="regInstructorName" class="form-control"
+                                    placeholder="e.g. Dr. Sarah Jenkins" required>
+                            </div>
+                            <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                                <label for="regInstructorEmail">Faculty Email</label>
+                                <input type="email" id="regInstructorEmail" class="form-control"
+                                    placeholder="s.jenkins@univ.edu" required>
+                            </div>
+                            <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                                <label for="regInstructorDept">Department</label>
+                                <select id="regInstructorDept" class="form-control" required>
+                                    <option value="CSE">Computer Science & Engineering (CSE)</option>
+                                    <option value="EEE">Electrical & Electronic Eng. (EEE)</option>
+                                    <option value="MATH">Mathematics & Physics (MATH)</option>
+                                    <option value="BBA">Business Administration (BBA)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                                <label for="regInstructorPass">Create Password</label>
+                                <input type="password" id="regInstructorPass" class="form-control"
+                                    placeholder="••••••••" required minlength="6">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-user-plus"></i> Create Faculty Account
+                            </button>
+                        </form>
                     </div>
                 </div>
 
-                <div class="admin-card">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-                        <div>
-                            <h3 style="color: var(--c-light-mint);">Assigned Course: CSE101 - Structured Programming
-                            </h3>
-                            <p style="color: var(--text-secondary); font-size: 0.85rem;">Mon/Wed 09:00 AM - 10:30 AM |
-                                Lab 302</p>
+                <!-- Instructor Dashboard Content (Shown when authenticated) -->
+                <div id="instructorDashboardContent" style="display: none;">
+                    <div class="page-header"
+                        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div class="page-title-group">
+                            <h1>Instructor Portal & Class Roster</h1>
+                            <p id="instructorStatusLabel">Authenticated as: Dr. Sarah Jenkins (Department of CSE)</p>
                         </div>
-                        <button class="btn btn-outline btn-sm"><i class="fas fa-file-export"></i> Export Roster
-                            CSV</button>
+                        <button class="btn btn-danger btn-sm" onclick="handleInstructorLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout Instructor
+                        </button>
                     </div>
 
-                    <div class="table-container">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>Student ID</th>
-                                    <th>Student Name</th>
-                                    <th>Department</th>
-                                    <th>Status</th>
-                                    <th>Grade</th>
-                                </tr>
-                            </thead>
-                            <tbody id="instructorRosterTableBody">
-                                <!-- Dynamic rendering by app.js -->
-                            </tbody>
-                        </table>
+                    <div class="admin-card">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <h3 style="color: var(--c-light-mint);">Assigned Course: CSE101 - Structured Programming
+                                </h3>
+                                <p style="color: var(--text-secondary); font-size: 0.85rem;">Mon/Wed 09:00 AM - 10:30 AM
+                                    |
+                                    Lab 302</p>
+                            </div>
+                            <button class="btn btn-outline btn-sm"><i class="fas fa-file-export"></i> Export Roster
+                                CSV</button>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Student Name</th>
+                                        <th>Department</th>
+                                        <th>Status</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="instructorRosterTableBody">
+                                    <!-- Dynamic rendering by app.js -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>

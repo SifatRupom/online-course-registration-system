@@ -10,6 +10,7 @@ function initApp() {
     setupNavigation();
     setupSearchAndFilters();
     setupAdminForms();
+    setupInstructorForms();
     renderCurrentRoleView();
 }
 
@@ -556,8 +557,106 @@ window.handleAdminDeleteCourse = function (courseId) {
     }
 };
 
+/* Instructor Authentication Tab Switcher */
+window.switchInstructorAuthTab = function (tab) {
+    const loginTab = document.getElementById('tabInstructorLogin');
+    const regTab = document.getElementById('tabInstructorRegister');
+    const loginForm = document.getElementById('instructorLoginForm');
+    const regForm = document.getElementById('instructorRegisterForm');
+
+    if (tab === 'login') {
+        if (loginTab) loginTab.className = 'btn btn-primary btn-sm';
+        if (regTab) regTab.className = 'btn btn-outline btn-sm';
+        if (loginForm) loginForm.style.display = 'block';
+        if (regForm) regForm.style.display = 'none';
+    } else {
+        if (loginTab) loginTab.className = 'btn btn-outline btn-sm';
+        if (regTab) regTab.className = 'btn btn-primary btn-sm';
+        if (loginForm) loginForm.style.display = 'none';
+        if (regForm) regForm.style.display = 'block';
+    }
+};
+
+/* Handle Instructor Login */
+window.handleInstructorLogin = function (e) {
+    e.preventDefault();
+    const email = document.getElementById('instructorEmail')?.value;
+    const pass = document.getElementById('instructorPass')?.value;
+
+    const storedInstructors = JSON.parse(localStorage.getItem('registered_instructors') || '[]');
+    const isDefaultInstructor = (email === 'instructor@univ.edu' && pass === 'faculty123');
+    const foundInstructor = storedInstructors.find(i => i.email === email && i.pass === pass);
+
+    if (isDefaultInstructor || foundInstructor) {
+        const instData = foundInstructor || { name: 'Dr. Sarah Jenkins', email: 'instructor@univ.edu', dept: 'CSE' };
+        localStorage.setItem('active_instructor_session', JSON.stringify(instData));
+        showToast(`Welcome back, ${instData.name}! Faculty Portal unlocked.`, 'success');
+        renderInstructorRoster();
+    } else {
+        showToast('Invalid faculty credentials! Demo login: instructor@univ.edu / faculty123', 'error');
+    }
+};
+
+/* Handle Instructor Registration */
+window.handleInstructorRegister = function (e) {
+    e.preventDefault();
+    const name = document.getElementById('regInstructorName')?.value;
+    const email = document.getElementById('regInstructorEmail')?.value;
+    const dept = document.getElementById('regInstructorDept')?.value;
+    const pass = document.getElementById('regInstructorPass')?.value;
+
+    const storedInstructors = JSON.parse(localStorage.getItem('registered_instructors') || '[]');
+    if (storedInstructors.some(i => i.email === email) || email === 'instructor@univ.edu') {
+        showToast('A faculty account with this email already exists!', 'error');
+        return;
+    }
+
+    const newInstructor = { name, email, dept, pass };
+    storedInstructors.push(newInstructor);
+    localStorage.setItem('registered_instructors', JSON.stringify(storedInstructors));
+    localStorage.setItem('active_instructor_session', JSON.stringify(newInstructor));
+
+    showToast(`Faculty account for ${name} registered successfully!`, 'success');
+    renderInstructorRoster();
+};
+
+/* Handle Instructor Logout */
+window.handleInstructorLogout = function () {
+    localStorage.removeItem('active_instructor_session');
+    showToast('Logged out of Faculty Portal.', 'info');
+    renderInstructorRoster();
+};
+
+/* Instructor Form Listeners */
+function setupInstructorForms() {
+    const loginForm = document.getElementById('instructorLoginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', window.handleInstructorLogin);
+    }
+
+    const registerForm = document.getElementById('instructorRegisterForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', window.handleInstructorRegister);
+    }
+}
+
 /* Instructor Portal view */
 function renderInstructorRoster() {
+    const authContainer = document.getElementById('instructorAuthContainer');
+    const dashboardContent = document.getElementById('instructorDashboardContent');
+    const statusLabel = document.getElementById('instructorStatusLabel');
+    const activeInstructor = JSON.parse(localStorage.getItem('active_instructor_session') || 'null');
+
+    if (activeInstructor) {
+        if (authContainer) authContainer.style.display = 'none';
+        if (dashboardContent) dashboardContent.style.display = 'block';
+        if (statusLabel) statusLabel.textContent = `Authenticated as: ${activeInstructor.name} (Department of ${activeInstructor.dept || 'CSE'})`;
+    } else {
+        if (authContainer) authContainer.style.display = 'block';
+        if (dashboardContent) dashboardContent.style.display = 'none';
+        return;
+    }
+
     const tbody = document.getElementById('instructorRosterTableBody');
     if (!tbody) return;
 
