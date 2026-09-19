@@ -234,7 +234,8 @@
                         </div>
 
                         <!-- Instructor Login Form -->
-                        <form id="instructorLoginForm">
+                        <form id="instructorLoginForm"
+                            onsubmit="event.preventDefault(); handleInstructorLogin(event); return false;">
                             <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
                                 <label for="instructorEmail">Faculty Email</label>
                                 <input type="email" id="instructorEmail" class="form-control"
@@ -254,7 +255,9 @@
                         </form>
 
                         <!-- Instructor Registration Form (Hidden by default) -->
-                        <form id="instructorRegisterForm" style="display: none;">
+                        <form id="instructorRegisterForm"
+                            onsubmit="event.preventDefault(); handleInstructorRegister(event); return false;"
+                            style="display: none;">
                             <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
                                 <label for="regInstructorName">Full Name</label>
                                 <input type="text" id="regInstructorName" class="form-control"
@@ -358,7 +361,8 @@
                         </div>
 
                         <!-- Admin Login Form -->
-                        <form id="adminLoginForm">
+                        <form id="adminLoginForm"
+                            onsubmit="event.preventDefault(); handleAdminLogin(event); return false;">
                             <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
                                 <label for="adminEmail">Admin Email / Username</label>
                                 <input type="email" id="adminEmail" class="form-control" value="admin@univ.edu" required
@@ -378,7 +382,9 @@
                         </form>
 
                         <!-- Admin Registration Form (Hidden by default) -->
-                        <form id="adminRegisterForm" style="display: none;">
+                        <form id="adminRegisterForm"
+                            onsubmit="event.preventDefault(); handleAdminRegister(event); return false;"
+                            style="display: none;">
                             <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
                                 <label for="regAdminName">Full Name</label>
                                 <input type="text" id="regAdminName" class="form-control"

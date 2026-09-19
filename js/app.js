@@ -415,7 +415,7 @@ window.switchAdminAuthTab = function (tab) {
 
 /* Handle Admin Login */
 window.handleAdminLogin = function (e) {
-    e.preventDefault();
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
     const email = document.getElementById('adminEmail')?.value;
     const pass = document.getElementById('adminPass')?.value;
 
@@ -431,11 +431,12 @@ window.handleAdminLogin = function (e) {
     } else {
         showToast('Invalid admin credentials! Demo login: admin@univ.edu / admin123', 'error');
     }
+    return false;
 };
 
 /* Handle Admin Registration */
 window.handleAdminRegister = function (e) {
-    e.preventDefault();
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
     const name = document.getElementById('regAdminName')?.value;
     const email = document.getElementById('regAdminEmail')?.value;
     const role = document.getElementById('regAdminRole')?.value;
@@ -444,7 +445,7 @@ window.handleAdminRegister = function (e) {
     const storedAdmins = JSON.parse(localStorage.getItem('registered_admins') || '[]');
     if (storedAdmins.some(a => a.email === email) || email === 'admin@univ.edu') {
         showToast('An admin account with this email already exists!', 'error');
-        return;
+        return false;
     }
 
     const newAdmin = { name, email, role, pass };
@@ -454,6 +455,7 @@ window.handleAdminRegister = function (e) {
 
     showToast(`Admin account for ${name} registered successfully!`, 'success');
     renderAdminCourseTable();
+    return false;
 };
 
 /* Handle Admin Logout */
@@ -579,7 +581,7 @@ window.switchInstructorAuthTab = function (tab) {
 
 /* Handle Instructor Login */
 window.handleInstructorLogin = function (e) {
-    e.preventDefault();
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
     const email = document.getElementById('instructorEmail')?.value;
     const pass = document.getElementById('instructorPass')?.value;
 
@@ -595,11 +597,12 @@ window.handleInstructorLogin = function (e) {
     } else {
         showToast('Invalid faculty credentials! Demo login: instructor@univ.edu / faculty123', 'error');
     }
+    return false;
 };
 
 /* Handle Instructor Registration */
 window.handleInstructorRegister = function (e) {
-    e.preventDefault();
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
     const name = document.getElementById('regInstructorName')?.value;
     const email = document.getElementById('regInstructorEmail')?.value;
     const dept = document.getElementById('regInstructorDept')?.value;
@@ -608,7 +611,7 @@ window.handleInstructorRegister = function (e) {
     const storedInstructors = JSON.parse(localStorage.getItem('registered_instructors') || '[]');
     if (storedInstructors.some(i => i.email === email) || email === 'instructor@univ.edu') {
         showToast('A faculty account with this email already exists!', 'error');
-        return;
+        return false;
     }
 
     const newInstructor = { name, email, dept, pass };
@@ -618,6 +621,7 @@ window.handleInstructorRegister = function (e) {
 
     showToast(`Faculty account for ${name} registered successfully!`, 'success');
     renderInstructorRoster();
+    return false;
 };
 
 /* Handle Instructor Logout */
