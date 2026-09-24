@@ -41,6 +41,10 @@
                     <span class="user-name" id="userName">Alex Rivera</span>
                     <span class="user-role-label" id="userRoleLabel">Student ID: 2024-1-60-042</span>
                 </div>
+                <button id="headerLogoutBtn" class="btn btn-danger btn-sm" onclick="handleHeaderLogout()"
+                    style="display: none; margin-left: 0.5rem; padding: 0.35rem 0.65rem; font-size: 0.78rem;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </div>
         </div>
     </header>
@@ -262,9 +266,12 @@
                         <h1>My Enrolled Timetable</h1>
                         <p>Review your registered course schedule and drop courses if necessary.</p>
                     </div>
-                    <div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
                         <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print
                             Advising Slip</button>
+                        <button class="btn btn-danger btn-sm" onclick="handleStudentLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout Student
+                        </button>
                     </div>
                 </div>
 

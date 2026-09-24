@@ -33,6 +33,7 @@ function updateHeaderUserProfile() {
     const userAvatar = document.getElementById('userAvatar');
     const userName = document.getElementById('userName');
     const userRoleLabel = document.getElementById('userRoleLabel');
+    const headerLogoutBtn = document.getElementById('headerLogoutBtn');
 
     if (!userAvatar || !userName || !userRoleLabel) return;
 
@@ -43,10 +44,12 @@ function updateHeaderUserProfile() {
             userAvatar.textContent = initials || 'ST';
             userName.textContent = activeStudent.name;
             userRoleLabel.textContent = `Student ID: ${activeStudent.studentId || '2024-1-60-042'}`;
+            if (headerLogoutBtn) headerLogoutBtn.style.display = 'inline-flex';
         } else {
             userAvatar.textContent = 'ST';
             userName.textContent = 'Guest Student';
             userRoleLabel.textContent = 'Please Sign In';
+            if (headerLogoutBtn) headerLogoutBtn.style.display = 'none';
         }
     } else if (currentRole === 'instructor') {
         const activeInstructor = JSON.parse(localStorage.getItem('active_instructor_session') || 'null');
@@ -55,10 +58,12 @@ function updateHeaderUserProfile() {
             userAvatar.textContent = initials || 'SJ';
             userName.textContent = activeInstructor.name;
             userRoleLabel.textContent = `Dept of ${activeInstructor.dept || 'CSE'}`;
+            if (headerLogoutBtn) headerLogoutBtn.style.display = 'inline-flex';
         } else {
             userAvatar.textContent = 'SJ';
             userName.textContent = 'Faculty Guest';
             userRoleLabel.textContent = 'Please Sign In';
+            if (headerLogoutBtn) headerLogoutBtn.style.display = 'none';
         }
     } else if (currentRole === 'admin') {
         const activeAdmin = JSON.parse(localStorage.getItem('active_admin_session') || 'null');
@@ -66,13 +71,26 @@ function updateHeaderUserProfile() {
             userAvatar.textContent = 'SA';
             userName.textContent = activeAdmin.name;
             userRoleLabel.textContent = activeAdmin.role || 'Office of Registrar';
+            if (headerLogoutBtn) headerLogoutBtn.style.display = 'inline-flex';
         } else {
             userAvatar.textContent = 'SA';
             userName.textContent = 'Admin Guest';
             userRoleLabel.textContent = 'Please Sign In';
+            if (headerLogoutBtn) headerLogoutBtn.style.display = 'none';
         }
     }
 }
+
+/* Header Logout Handler */
+window.handleHeaderLogout = function () {
+    if (currentRole === 'student') {
+        window.handleStudentLogout();
+    } else if (currentRole === 'instructor') {
+        window.handleInstructorLogout();
+    } else if (currentRole === 'admin') {
+        window.handleAdminLogout();
+    }
+};
 
 /* Sidebar Navigation Handler */
 function setupNavigation() {
