@@ -85,12 +85,99 @@
         <!-- Main Content Body -->
         <main class="main-content">
 
+            <!-- VIEW 0: Student Auth Gate (Shown when student not authenticated) -->
+            <section id="studentAuthContainer" class="view-section">
+                <div class="admin-card" style="max-width: 500px; margin: 3rem auto; text-align: center;">
+                    <div
+                        style="width: 60px; height: 60px; background: rgba(142, 182, 155, 0.15); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; color: var(--c-soft-sage); font-size: 1.8rem;">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h2 style="color: var(--c-light-mint); font-size: 1.5rem; margin-bottom: 0.5rem;">Student Portal
+                        Sign In</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.5rem;">Please log in
+                        with student credentials or register your new student account.</p>
+
+                    <!-- Auth Tabs -->
+                    <div
+                        style="display: flex; gap: 0.5rem; background: var(--c-dark-forest); padding: 0.35rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                        <button type="button" id="tabStudentLogin" class="btn btn-primary btn-sm" style="flex: 1;"
+                            onclick="switchStudentAuthTab('login')">Student Sign In</button>
+                        <button type="button" id="tabStudentRegister" class="btn btn-outline btn-sm" style="flex: 1;"
+                            onclick="switchStudentAuthTab('register')">Register Student</button>
+                    </div>
+
+                    <!-- Student Login Form -->
+                    <form id="studentLoginForm"
+                        onsubmit="event.preventDefault(); handleStudentLogin(event); return false;">
+                        <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                            <label for="studentEmail">Student Email / Username</label>
+                            <input type="email" id="studentEmail" class="form-control" value="alex.rivera@univ.edu"
+                                required placeholder="alex.rivera@univ.edu">
+                        </div>
+                        <div class="form-group" style="text-align: left; margin-bottom: 1.25rem;">
+                            <label for="studentPass">Password</label>
+                            <input type="password" id="studentPass" class="form-control" value="student123" required
+                                placeholder="••••••••">
+                            <span
+                                style="font-size: 0.78rem; color: var(--c-soft-sage); display: block; margin-top: 0.4rem;">Demo
+                                Credentials: <code>alex.rivera@univ.edu</code> / <code>student123</code></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-sign-in-alt"></i> Login to Student Portal
+                        </button>
+                    </form>
+
+                    <!-- Student Registration Form (Hidden by default) -->
+                    <form id="studentRegisterForm"
+                        onsubmit="event.preventDefault(); handleStudentRegister(event); return false;"
+                        style="display: none;">
+                        <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                            <label for="regStudentName">Full Name</label>
+                            <input type="text" id="regStudentName" class="form-control" placeholder="e.g. Alex Rivera"
+                                required>
+                        </div>
+                        <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                            <label for="regStudentEmail">Student Email</label>
+                            <input type="email" id="regStudentEmail" class="form-control"
+                                placeholder="alex.rivera@univ.edu" required>
+                        </div>
+                        <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                            <label for="regStudentId">Student ID</label>
+                            <input type="text" id="regStudentId" class="form-control" placeholder="2024-1-60-042"
+                                required>
+                        </div>
+                        <div class="form-group" style="text-align: left; margin-bottom: 1rem;">
+                            <label for="regStudentDept">Department</label>
+                            <select id="regStudentDept" class="form-control" required>
+                                <option value="CSE">Computer Science & Engineering (CSE)</option>
+                                <option value="EEE">Electrical & Electronic Eng. (EEE)</option>
+                                <option value="MATH">Mathematics & Physics (MATH)</option>
+                                <option value="BBA">Business Administration (BBA)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                            <label for="regStudentPass">Create Password</label>
+                            <input type="password" id="regStudentPass" class="form-control" placeholder="••••••••"
+                                required minlength="6">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-user-plus"></i> Create Student Account
+                        </button>
+                    </form>
+                </div>
+            </section>
+
             <!-- VIEW 1: Student Course Catalog -->
             <section id="viewStudentCatalog" class="view-section active">
                 <div class="page-header">
                     <div class="page-title-group">
                         <h1>Course Catalog & Registration</h1>
                         <p>Browse available semester offerings, check prerequisites, and enroll in classes.</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-danger btn-sm" onclick="handleStudentLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout Student
+                        </button>
                     </div>
                 </div>
 

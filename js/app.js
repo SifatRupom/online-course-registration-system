@@ -9,6 +9,7 @@ function initApp() {
     setupRoleSwitcher();
     setupNavigation();
     setupSearchAndFilters();
+    setupStudentForms();
     setupAdminForms();
     setupInstructorForms();
     renderCurrentRoleView();
@@ -17,32 +18,59 @@ function initApp() {
 /* Role Switching Handler */
 function setupRoleSwitcher() {
     const roleSelect = document.getElementById('roleSelect');
+    if (roleSelect) {
+        roleSelect.addEventListener('change', (e) => {
+            currentRole = e.target.value;
+            updateHeaderUserProfile();
+            renderCurrentRoleView();
+            showToast(`Switched view to ${currentRole.toUpperCase()} role`, 'info');
+        });
+    }
+}
+
+/* Helper to sync Header Profile Badge */
+function updateHeaderUserProfile() {
     const userAvatar = document.getElementById('userAvatar');
     const userName = document.getElementById('userName');
     const userRoleLabel = document.getElementById('userRoleLabel');
 
-    if (roleSelect) {
-        roleSelect.addEventListener('change', (e) => {
-            currentRole = e.target.value;
-            const student = window.courseStore.getStudent();
+    if (!userAvatar || !userName || !userRoleLabel) return;
 
-            if (currentRole === 'student') {
-                userAvatar.textContent = 'AR';
-                userName.textContent = student.name;
-                userRoleLabel.textContent = 'Student ID: 2024-1-60-042';
-            } else if (currentRole === 'instructor') {
-                userAvatar.textContent = 'SJ';
-                userName.textContent = 'Dr. Sarah Jenkins';
-                userRoleLabel.textContent = 'Department of CSE';
-            } else if (currentRole === 'admin') {
-                userAvatar.textContent = 'SA';
-                userName.textContent = 'System Admin';
-                userRoleLabel.textContent = 'Office of the Registrar';
-            }
-
-            renderCurrentRoleView();
-            showToast(`Switched view to ${currentRole.toUpperCase()} role`, 'info');
-        });
+    if (currentRole === 'student') {
+        const activeStudent = JSON.parse(localStorage.getItem('active_student_session') || 'null');
+        if (activeStudent) {
+            const initials = activeStudent.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            userAvatar.textContent = initials || 'ST';
+            userName.textContent = activeStudent.name;
+            userRoleLabel.textContent = `Student ID: ${activeStudent.studentId || '2024-1-60-042'}`;
+        } else {
+            userAvatar.textContent = 'ST';
+            userName.textContent = 'Guest Student';
+            userRoleLabel.textContent = 'Please Sign In';
+        }
+    } else if (currentRole === 'instructor') {
+        const activeInstructor = JSON.parse(localStorage.getItem('active_instructor_session') || 'null');
+        if (activeInstructor) {
+            const initials = activeInstructor.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            userAvatar.textContent = initials || 'SJ';
+            userName.textContent = activeInstructor.name;
+            userRoleLabel.textContent = `Dept of ${activeInstructor.dept || 'CSE'}`;
+        } else {
+            userAvatar.textContent = 'SJ';
+            userName.textContent = 'Faculty Guest';
+            userRoleLabel.textContent = 'Please Sign In';
+        }
+    } else if (currentRole === 'admin') {
+        const activeAdmin = JSON.parse(localStorage.getItem('active_admin_session') || 'null');
+        if (activeAdmin) {
+            userAvatar.textContent = 'SA';
+            userName.textContent = activeAdmin.name;
+            userRoleLabel.textContent = activeAdmin.role || 'Office of Registrar';
+        } else {
+            userAvatar.textContent = 'SA';
+            userName.textContent = 'Admin Guest';
+            userRoleLabel.textContent = 'Please Sign In';
+        }
     }
 }
 
@@ -53,6 +81,12 @@ function setupNavigation() {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const targetView = item.getAttribute('data-view');
+
+            const activeStudent = JSON.parse(localStorage.getItem('active_student_session') || 'null');
+            if (currentRole === 'student' && !activeStudent) {
+                showToast('Please log in to access student services.', 'warning');
+                return;
+            }
 
             navItems.forEach(n => n.classList.remove('active'));
             item.classList.add('active');
@@ -88,15 +122,25 @@ function renderCurrentRoleView() {
     instructorNav.style.display = currentRole === 'instructor' ? 'block' : 'none';
     adminNav.style.display = currentRole === 'admin' ? 'block' : 'none';
 
+    updateHeaderUserProfile();
+
     // Show appropriate default section
     const views = document.querySelectorAll('.view-section');
     views.forEach(v => v.classList.remove('active'));
 
     if (currentRole === 'student') {
-        document.getElementById('viewStudentCatalog').classList.add('active');
-        renderStudentCreditTracker();
-        renderStudentCatalog();
-        renderEnrolledSchedule();
+        const activeStudent = JSON.parse(localStorage.getItem('active_student_session') || 'null');
+        if (activeStudent) {
+            const authSection = document.getElementById('studentAuthContainer');
+            if (authSection) authSection.classList.remove('active');
+            document.getElementById('viewStudentCatalog').classList.add('active');
+            renderStudentCreditTracker();
+            renderStudentCatalog();
+            renderEnrolledSchedule();
+        } else {
+            const authSection = document.getElementById('studentAuthContainer');
+            if (authSection) authSection.classList.add('active');
+        }
     } else if (currentRole === 'instructor') {
         document.getElementById('viewInstructorPortal').classList.add('active');
         renderInstructorRoster();
@@ -392,6 +436,97 @@ window.handleDropCourse = function (courseId) {
         renderEnrolledSchedule();
     }
 };
+
+/* Student Authentication Tab Switcher */
+window.switchStudentAuthTab = function (tab) {
+    const loginTab = document.getElementById('tabStudentLogin');
+    const regTab = document.getElementById('tabStudentRegister');
+    const loginForm = document.getElementById('studentLoginForm');
+    const regForm = document.getElementById('studentRegisterForm');
+
+    if (tab === 'login') {
+        if (loginTab) loginTab.className = 'btn btn-primary btn-sm';
+        if (regTab) regTab.className = 'btn btn-outline btn-sm';
+        if (loginForm) loginForm.style.display = 'block';
+        if (regForm) regForm.style.display = 'none';
+    } else {
+        if (loginTab) loginTab.className = 'btn btn-outline btn-sm';
+        if (regTab) regTab.className = 'btn btn-primary btn-sm';
+        if (loginForm) loginForm.style.display = 'none';
+        if (regForm) regForm.style.display = 'block';
+    }
+};
+
+/* Handle Student Login */
+window.handleStudentLogin = function (e) {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    const email = document.getElementById('studentEmail')?.value?.trim();
+    const pass = document.getElementById('studentPass')?.value;
+
+    const storedStudents = JSON.parse(localStorage.getItem('registered_students') || '[]');
+    const isDefaultStudent = (email === 'alex.rivera@univ.edu' && pass === 'student123');
+    const foundStudent = storedStudents.find(s => s.email === email && s.pass === pass);
+
+    if (isDefaultStudent || foundStudent) {
+        const studentData = foundStudent || {
+            name: 'Alex Rivera',
+            email: 'alex.rivera@univ.edu',
+            studentId: '2024-1-60-042',
+            dept: 'CSE'
+        };
+        localStorage.setItem('active_student_session', JSON.stringify(studentData));
+        showToast(`Welcome back, ${studentData.name}! Student Portal unlocked.`, 'success');
+        renderCurrentRoleView();
+    } else {
+        showToast('Invalid student credentials! Demo login: alex.rivera@univ.edu / student123', 'error');
+    }
+    return false;
+};
+
+/* Handle Student Registration */
+window.handleStudentRegister = function (e) {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    const name = document.getElementById('regStudentName')?.value?.trim();
+    const email = document.getElementById('regStudentEmail')?.value?.trim();
+    const studentId = document.getElementById('regStudentId')?.value?.trim();
+    const dept = document.getElementById('regStudentDept')?.value;
+    const pass = document.getElementById('regStudentPass')?.value;
+
+    const storedStudents = JSON.parse(localStorage.getItem('registered_students') || '[]');
+    if (storedStudents.some(s => s.email === email) || email === 'alex.rivera@univ.edu') {
+        showToast('A student account with this email already exists!', 'error');
+        return false;
+    }
+
+    const newStudent = { name, email, studentId, dept, pass };
+    storedStudents.push(newStudent);
+    localStorage.setItem('registered_students', JSON.stringify(storedStudents));
+    localStorage.setItem('active_student_session', JSON.stringify(newStudent));
+
+    showToast(`Student account for ${name} registered successfully!`, 'success');
+    renderCurrentRoleView();
+    return false;
+};
+
+/* Handle Student Logout */
+window.handleStudentLogout = function () {
+    localStorage.removeItem('active_student_session');
+    showToast('Logged out of Student Portal.', 'info');
+    renderCurrentRoleView();
+};
+
+/* Student Form Listeners */
+function setupStudentForms() {
+    const loginForm = document.getElementById('studentLoginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', window.handleStudentLogin);
+    }
+
+    const registerForm = document.getElementById('studentRegisterForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', window.handleStudentRegister);
+    }
+}
 
 /* Admin Authentication Tab Switcher */
 window.switchAdminAuthTab = function (tab) {
