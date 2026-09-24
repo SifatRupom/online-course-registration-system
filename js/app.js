@@ -15,17 +15,60 @@ function initApp() {
     renderCurrentRoleView();
 }
 
-/* Role Switching Handler */
-function setupRoleSwitcher() {
-    const roleSelect = document.getElementById('roleSelect');
-    if (roleSelect) {
-        roleSelect.addEventListener('change', (e) => {
-            currentRole = e.target.value;
-            updateHeaderUserProfile();
-            renderCurrentRoleView();
-            showToast(`Switched view to ${currentRole.toUpperCase()} role`, 'info');
-        });
+/* Modern Role Switching Handlers */
+window.toggleRoleDropdown = function (e) {
+    if (e) e.stopPropagation();
+    const dropdown = document.getElementById('roleDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('open');
     }
+};
+
+window.selectRole = function (role) {
+    currentRole = role;
+
+    // Update Dropdown UI Button Label & Icon
+    const labelElem = document.getElementById('selectedRoleLabel');
+    const iconElem = document.getElementById('roleBtnIcon');
+
+    if (role === 'student') {
+        if (labelElem) labelElem.textContent = 'Student Portal';
+        if (iconElem) iconElem.className = 'fas fa-user-graduate role-btn-icon';
+    } else if (role === 'instructor') {
+        if (labelElem) labelElem.textContent = 'Instructor Portal';
+        if (iconElem) iconElem.className = 'fas fa-chalkboard-teacher role-btn-icon';
+    } else if (role === 'admin') {
+        if (labelElem) labelElem.textContent = 'System Admin';
+        if (iconElem) iconElem.className = 'fas fa-user-shield role-btn-icon';
+    }
+
+    // Update active class in dropdown items
+    const items = document.querySelectorAll('#roleDropdownMenu .dropdown-item');
+    items.forEach(item => {
+        if (item.getAttribute('data-value') === role) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+
+    // Close dropdown menu
+    const dropdown = document.getElementById('roleDropdown');
+    if (dropdown) dropdown.classList.remove('open');
+
+    updateHeaderUserProfile();
+    renderCurrentRoleView();
+    showToast(`Switched view to ${role.toUpperCase()} role`, 'info');
+};
+
+function setupRoleSwitcher() {
+    // Close role dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('roleDropdown');
+        if (dropdown && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
 }
 
 /* Helper to sync Header Profile Badge */

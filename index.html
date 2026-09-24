@@ -24,14 +24,40 @@
         </div>
 
         <div class="header-actions">
-            <!-- Role Switcher -->
-            <div class="role-switcher-badge">
-                <label for="roleSelect"><i class="fas fa-user-shield"></i> View Role:</label>
-                <select id="roleSelect" class="role-select">
-                    <option value="student">Student Portal</option>
-                    <option value="instructor">Instructor Portal</option>
-                    <option value="admin">System Admin</option>
-                </select>
+            <!-- Modern Role Switcher Dropdown -->
+            <div class="custom-dropdown" id="roleDropdown">
+                <button type="button" class="custom-dropdown-btn" id="roleDropdownBtn"
+                    onclick="toggleRoleDropdown(event)">
+                    <i class="fas fa-user-graduate role-btn-icon" id="roleBtnIcon"></i>
+                    <span class="role-btn-label">Role: <strong id="selectedRoleLabel">Student Portal</strong></span>
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                </button>
+                <div class="custom-dropdown-menu" id="roleDropdownMenu">
+                    <div class="dropdown-item active" data-value="student" onclick="selectRole('student')">
+                        <div class="dropdown-item-icon-wrapper"><i class="fas fa-user-graduate"></i></div>
+                        <div class="dropdown-item-text">
+                            <span class="item-title">Student Portal</span>
+                            <span class="item-desc">Catalog & Enrolled Schedule</span>
+                        </div>
+                        <i class="fas fa-check check-icon"></i>
+                    </div>
+                    <div class="dropdown-item" data-value="instructor" onclick="selectRole('instructor')">
+                        <div class="dropdown-item-icon-wrapper"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <div class="dropdown-item-text">
+                            <span class="item-title">Instructor Portal</span>
+                            <span class="item-desc">Class Roster & Grades</span>
+                        </div>
+                        <i class="fas fa-check check-icon"></i>
+                    </div>
+                    <div class="dropdown-item" data-value="admin" onclick="selectRole('admin')">
+                        <div class="dropdown-item-icon-wrapper"><i class="fas fa-user-shield"></i></div>
+                        <div class="dropdown-item-text">
+                            <span class="item-title">System Admin</span>
+                            <span class="item-desc">Course Catalog Management</span>
+                        </div>
+                        <i class="fas fa-check check-icon"></i>
+                    </div>
+                </div>
             </div>
 
             <!-- Profile Info -->
