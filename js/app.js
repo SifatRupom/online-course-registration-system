@@ -219,8 +219,8 @@ function renderCurrentRoleView() {
         } else {
             if (sidebar) sidebar.style.display = 'none';
             instructorNav.style.display = 'none';
-            const authSection = document.getElementById('instructorAuthContainer');
-            if (authSection) authSection.classList.add('active');
+            document.getElementById('viewInstructorPortal').classList.add('active');
+            renderInstructorRoster();
         }
     } else if (currentRole === 'admin') {
         const activeAdmin = JSON.parse(localStorage.getItem('active_admin_session') || 'null');
@@ -232,8 +232,8 @@ function renderCurrentRoleView() {
         } else {
             if (sidebar) sidebar.style.display = 'none';
             adminNav.style.display = 'none';
-            const authSection = document.getElementById('adminAuthContainer');
-            if (authSection) authSection.classList.add('active');
+            document.getElementById('viewAdminPortal').classList.add('active');
+            renderAdminCourseTable();
         }
     }
 }
