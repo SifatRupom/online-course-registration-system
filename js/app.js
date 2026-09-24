@@ -177,11 +177,13 @@ function renderCurrentRoleView() {
     const studentNav = document.getElementById('studentNavSection');
     const instructorNav = document.getElementById('instructorNavSection');
     const adminNav = document.getElementById('adminNavSection');
+    const sidebar = document.querySelector('.sidebar');
 
-    // Reset visibility of role nav items
-    studentNav.style.display = currentRole === 'student' ? 'block' : 'none';
-    instructorNav.style.display = currentRole === 'instructor' ? 'block' : 'none';
-    adminNav.style.display = currentRole === 'admin' ? 'block' : 'none';
+    // Hide sidebar and nav sections by default
+    studentNav.style.display = 'none';
+    instructorNav.style.display = 'none';
+    adminNav.style.display = 'none';
+    if (sidebar) sidebar.style.display = 'none';
 
     updateHeaderUserProfile();
 
@@ -192,6 +194,9 @@ function renderCurrentRoleView() {
     if (currentRole === 'student') {
         const activeStudent = JSON.parse(localStorage.getItem('active_student_session') || 'null');
         if (activeStudent) {
+            studentNav.style.display = 'block';
+            if (sidebar) sidebar.style.display = 'flex';
+
             const authSection = document.getElementById('studentAuthContainer');
             if (authSection) authSection.classList.remove('active');
             document.getElementById('viewStudentCatalog').classList.add('active');
@@ -199,15 +204,37 @@ function renderCurrentRoleView() {
             renderStudentCatalog();
             renderEnrolledSchedule();
         } else {
+            if (sidebar) sidebar.style.display = 'none';
+            studentNav.style.display = 'none';
             const authSection = document.getElementById('studentAuthContainer');
             if (authSection) authSection.classList.add('active');
         }
     } else if (currentRole === 'instructor') {
-        document.getElementById('viewInstructorPortal').classList.add('active');
-        renderInstructorRoster();
+        const activeInstructor = JSON.parse(localStorage.getItem('active_instructor_session') || 'null');
+        if (activeInstructor) {
+            instructorNav.style.display = 'block';
+            if (sidebar) sidebar.style.display = 'flex';
+            document.getElementById('viewInstructorPortal').classList.add('active');
+            renderInstructorRoster();
+        } else {
+            if (sidebar) sidebar.style.display = 'none';
+            instructorNav.style.display = 'none';
+            const authSection = document.getElementById('instructorAuthContainer');
+            if (authSection) authSection.classList.add('active');
+        }
     } else if (currentRole === 'admin') {
-        document.getElementById('viewAdminPortal').classList.add('active');
-        renderAdminCourseTable();
+        const activeAdmin = JSON.parse(localStorage.getItem('active_admin_session') || 'null');
+        if (activeAdmin) {
+            adminNav.style.display = 'block';
+            if (sidebar) sidebar.style.display = 'flex';
+            document.getElementById('viewAdminPortal').classList.add('active');
+            renderAdminCourseTable();
+        } else {
+            if (sidebar) sidebar.style.display = 'none';
+            adminNav.style.display = 'none';
+            const authSection = document.getElementById('adminAuthContainer');
+            if (authSection) authSection.classList.add('active');
+        }
     }
 }
 
